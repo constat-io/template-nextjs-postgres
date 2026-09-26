@@ -9,4 +9,4 @@ this repository as being from no template — which will then be the truth about
 - template: nextjs-postgres
 - name: Web app · Next.js with Postgres
 - detail: a page, a database, tests, a picture of the first screen
-- version: 39
+- version: 42
