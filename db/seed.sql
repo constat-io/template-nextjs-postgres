@@ -1,0 +1,5 @@
+INSERT INTO notes (id, said) VALUES
+  ('00000000-0000-4000-8000-000000000001', 'A first note, from the sample data'),
+  ('00000000-0000-4000-8000-000000000002', 'A second one'),
+  ('00000000-0000-4000-8000-000000000003', 'And a third')
+ON CONFLICT (id) DO NOTHING;
