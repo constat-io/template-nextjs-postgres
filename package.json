@@ -9,7 +9,8 @@
     "build": "next build",
     "start": "next start",
     "test": "vitest run",
-    "test:ci": "vitest run --reporter=json --outputFile=.constat/check-report/raw.json"
+    "test:ci": "vitest run --reporter=json --outputFile=.constat/check-report/raw.json",
+    "try:prepare": "node scripts/try-prepare.mjs"
   },
   "dependencies": {
     "next": "^15.0.0",
