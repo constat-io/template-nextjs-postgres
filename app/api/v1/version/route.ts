@@ -19,10 +19,11 @@ function databaseFingerprint(): string | null {
 }
 
 export function GET(): Response {
+  // An empty value is no commit (the start file passes CONSTAT_COMMIT through, empty when unknown).
   const commit = process.env.NEXT_PUBLIC_CONSTAT_COMMIT
-    ?? process.env.CONSTAT_COMMIT
-    ?? process.env.RENDER_GIT_COMMIT
-    ?? process.env.VERCEL_GIT_COMMIT_SHA
-    ?? null;
+    || process.env.CONSTAT_COMMIT
+    || process.env.RENDER_GIT_COMMIT
+    || process.env.VERCEL_GIT_COMMIT_SHA
+    || null;
   return Response.json({ commit, database: databaseFingerprint() });
 }

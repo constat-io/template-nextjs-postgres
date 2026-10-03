@@ -11,6 +11,12 @@ services:
     environment:
       DATABASE_URL: postgres://app:app@db:5432/app
       WATCHPACK_POLLING: "true"
+      # Try mode (template 49): the DoneMark strip shows what the app said; the try line hands its key through.
+      DONEMARK_TRY: ${DONEMARK_TRY:-1}
+      # The commit it runs, when the starter knows it (CI does), for /api/v1/version.
+      CONSTAT_COMMIT: ${CONSTAT_COMMIT:-}
+      DONEMARK_TRY_KEY: ${DONEMARK_TRY_KEY:-}
+      DONEMARK_URL: ${DONEMARK_URL:-}
     command: ["sh", "-c", "npm install --no-audit --no-fund && npm run try:prepare && npm run dev -- -H 0.0.0.0"]
     ports: ["${TRY_PORT:-3000}:3000"]
     depends_on: { db: { condition: service_healthy } }
