@@ -12,4 +12,4 @@ Make the first thing that is yours. Name the product where it says its own name,
 
 - A fresh checkout installs and runs its tests in CI — the check foundation > installs and tests
 - The app starts and shows its name on its first screen — the check foundation > first screen, and CI takes a picture of it
-- Constat reads the repository as ready: evidence, runner, and a Run button — a fact from the reporter, not a check
+- DoneMark reads the repository as ready: evidence, runner, and a Run button — a fact from the reporter, not a check
