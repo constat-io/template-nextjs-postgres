@@ -1,8 +1,8 @@
-// GET /api/v1/version: which commit this running app was built from. Constat asks your live
+// GET /api/v1/version: which commit this running app was built from. DoneMark asks your live
 // address this after a release, and calls the release live only when the answer is its commit.
-// The deploy step Constat writes for your host passes the commit in; Render sets its own.
+// The deploy step DoneMark writes for your host passes the commit in; Render sets its own.
 // It also names the database it talks to by a fingerprint — a hash of its host, port and name,
-// nothing that opens it — so Constat can warn when a preview copy talks to the live database.
+// nothing that opens it — so DoneMark can warn when a preview copy talks to the live database.
 import { createHash } from 'node:crypto';
 
 export const dynamic = 'force-dynamic';
