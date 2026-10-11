@@ -1,0 +1,15 @@
+# Installed and built.
+node_modules/
+.next/
+out/
+coverage/
+# Local settings and secrets.
+.env
+.env*.local
+# What DoneMark's checks write for CI to publish; never part of the app.
+.constat/check-report/
+.constat/check-coverage/
+.constat/check-mutation/
+.constat/pictures/
+*.log
+.DS_Store
