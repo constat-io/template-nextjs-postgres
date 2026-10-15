@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { productName } from './page';
+import { productName } from './product';
 
 describe('foundation', () => {
   it('installs and tests', () => {
