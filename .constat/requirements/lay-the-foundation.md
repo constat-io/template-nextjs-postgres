@@ -10,6 +10,6 @@ Make the first thing that is yours. Name the product where it says its own name,
 
 ## Acceptance criteria
 
-- A fresh checkout installs and runs its tests in CI — the check foundation > installs and tests
+- A fresh copy installs, and its tests pass — the check foundation > installs and tests
 - The app starts and shows its name on its first screen — the check foundation > first screen, and CI takes a picture of it
-- DoneMark reads the repository as ready: evidence, runner, and a Run button — a fact from the reporter, not a check
+- DoneMark can read this project: its tests report back, and you can start a build — a fact from the reporter, not a check
