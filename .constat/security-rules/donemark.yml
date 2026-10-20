@@ -1,4 +1,4 @@
-# constat:template id=donemark-security-rules version=72 sha256=c308fe2c564c0e1affc554b8f243884738331bb1b7ceaf4df75d31e638ec70f6
+# constat:template id=donemark-security-rules version=73 sha256=c308fe2c564c0e1affc554b8f243884738331bb1b7ceaf4df75d31e638ec70f6
 # DoneMark's own code rules for TypeScript and JavaScript (the security square, move 6, 20 October 2026).
 #
 # Written by DoneMark, kept in your repository, open. They name the flaw classes agent-written code gets
