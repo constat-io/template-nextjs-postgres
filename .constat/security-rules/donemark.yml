@@ -1,0 +1,203 @@
+# constat:template id=donemark-security-rules version=72 sha256=c308fe2c564c0e1affc554b8f243884738331bb1b7ceaf4df75d31e638ec70f6
+# DoneMark's own code rules for TypeScript and JavaScript (the security square, move 6, 20 October 2026).
+#
+# Written by DoneMark, kept in your repository, open. They name the flaw classes agent-written code gets
+# wrong most often: a query, a command, a path or a redirect built from text that came from outside; HTML
+# inserted without escaping; and a handful of settings that switch a protection off. A rule marked with a
+# security-severity of 7 or more turns the security square red; the others are listed, not counted. The
+# square is never a gate: the judge decides.
+#
+# Each rule has a test beside it (donemark.ts, donemark.tsx): run `opengrep scan --test` on this folder.
+rules:
+  - id: donemark.query-from-input
+    message: A database query is built from text that came from outside, so that text can change the query
+    severity: ERROR
+    languages: [typescript, javascript]
+    metadata:
+      security-severity: "8.0"
+      category: security
+      cwe: "CWE-89"
+    pattern-either:
+      - pattern: $DB.query(`...${$X}...`, ...)
+      - pattern: $DB.query("..." + $X, ...)
+      - pattern: |
+          $Q = `...${$X}...`
+          ...
+          $DB.query($Q, ...)
+      - pattern: $DB.raw(`...${$X}...`)
+      - pattern: $DB.$queryRawUnsafe(`...${$X}...`, ...)
+      - pattern: $DB.$executeRawUnsafe(`...${$X}...`, ...)
+      - pattern: $SQL.unsafe(`...${$X}...`)
+
+  - id: donemark.shell-from-input
+    message: A shell command is built from text that came from outside, so that text can run commands
+    severity: ERROR
+    languages: [typescript, javascript]
+    metadata:
+      security-severity: "8.5"
+      category: security
+      cwe: "CWE-78"
+    pattern-either:
+      - pattern: exec(`...${$X}...`, ...)
+      - pattern: execSync(`...${$X}...`, ...)
+      - pattern: $CP.exec(`...${$X}...`, ...)
+      - pattern: $CP.execSync(`...${$X}...`, ...)
+      - pattern: exec("..." + $X, ...)
+      - pattern: execSync("..." + $X, ...)
+
+  - id: donemark.eval
+    message: Code is run from a string, so any text that reaches it is run as code
+    severity: ERROR
+    languages: [typescript, javascript]
+    metadata:
+      security-severity: "8.0"
+      category: security
+      cwe: "CWE-95"
+    pattern-either:
+      - pattern: eval($X)
+      - pattern: new Function(...)
+
+  - id: donemark.path-from-input
+    message: A file path is built from text that came from outside, so that text can reach other files
+    severity: ERROR
+    languages: [typescript, javascript]
+    metadata:
+      security-severity: "7.5"
+      category: security
+      cwe: "CWE-22"
+    pattern-either:
+      - pattern: $FS.readFile(..., $REQ.query.$P, ...)
+      - pattern: $FS.readFileSync(..., $REQ.query.$P, ...)
+      - pattern: $FS.readFile(..., $REQ.params.$P, ...)
+      - pattern: $FS.readFileSync(..., $REQ.params.$P, ...)
+      - pattern: $FS.readFile(path.join(..., $REQ.query.$P, ...), ...)
+      - pattern: $FS.readFileSync(path.join(..., $REQ.query.$P, ...), ...)
+      - pattern: $FS.readFile(path.join(..., $REQ.params.$P, ...), ...)
+      - pattern: $FS.readFileSync(path.join(..., $REQ.params.$P, ...), ...)
+      - pattern: $FS.readFile(`...${$REQ.query.$P}...`, ...)
+      - pattern: $FS.readFileSync(`...${$REQ.query.$P}...`, ...)
+
+  - id: donemark.tls-check-off
+    message: Certificate checking is switched off, so the connection trusts anyone in the middle
+    severity: ERROR
+    languages: [typescript, javascript]
+    metadata:
+      security-severity: "7.0"
+      category: security
+      cwe: "CWE-295"
+    pattern-either:
+      - pattern: |
+          { ..., rejectUnauthorized: false, ... }
+      - pattern: process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
+      - pattern: process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
+
+  - id: donemark.jwt-none
+    message: A token is accepted with no signature algorithm, so anyone can forge one
+    severity: ERROR
+    languages: [typescript, javascript]
+    metadata:
+      security-severity: "7.5"
+      category: security
+      cwe: "CWE-347"
+    pattern-either:
+      - pattern: |
+          { ..., algorithms: ["none"], ... }
+      - pattern: |
+          { ..., algorithms: ['none'], ... }
+
+  - id: donemark.html-from-input
+    message: HTML is inserted into the page without escaping; text that came from outside can carry script
+    severity: WARNING
+    languages: [typescript, javascript]
+    metadata:
+      security-severity: "6.0"
+      category: security
+      cwe: "CWE-79"
+    pattern-either:
+      - patterns:
+          - pattern: '<$EL dangerouslySetInnerHTML={{ __html: $X }} ... />'
+          - metavariable-regex:
+              metavariable: $X
+              regex: ^[^'"`].*
+      - patterns:
+          - pattern: $E.innerHTML = $X
+          - pattern-not: $E.innerHTML = "..."
+          - pattern-not: $E.innerHTML = ""
+
+  - id: donemark.redirect-from-input
+    message: A redirect goes where text from outside says, so a link can send people to another site
+    severity: WARNING
+    languages: [typescript, javascript]
+    metadata:
+      security-severity: "5.5"
+      category: security
+      cwe: "CWE-601"
+    pattern-either:
+      - pattern: redirect($REQ.query.$P, ...)
+      - pattern: $RES.redirect($REQ.query.$P, ...)
+      - pattern: $RES.redirect($REQ.body.$P, ...)
+      - pattern: redirect(<... $SP.get("...") ...>, ...)
+      - pattern: NextResponse.redirect(<... $SP.get("...") ...>, ...)
+
+  - id: donemark.regex-from-input
+    message: A regular expression is built from text that came from outside, so a crafted string can stall the server
+    severity: WARNING
+    languages: [typescript, javascript]
+    metadata:
+      security-severity: "5.0"
+      category: security
+      cwe: "CWE-1333"
+    pattern-either:
+      - pattern: new RegExp($REQ.query.$P, ...)
+      - pattern: new RegExp($REQ.body.$P, ...)
+      - pattern: new RegExp(`...${$X}...`, ...)
+
+  - id: donemark.weak-randomness-for-secrets
+    message: A secret, token or password is made with Math.random, which is guessable
+    severity: WARNING
+    languages: [typescript, javascript]
+    metadata:
+      security-severity: "6.0"
+      category: security
+      cwe: "CWE-338"
+    patterns:
+      - pattern-either:
+          - pattern: $NAME = Math.random()
+          - pattern: $NAME = Math.random().$M(...)
+          - pattern: $NAME = Math.random().$M(...).$N(...)
+          - pattern: const $NAME = Math.random().$M(...)
+          - pattern: const $NAME = Math.random().$M(...).$N(...)
+          - pattern: let $NAME = Math.random().$M(...)
+          - pattern: let $NAME = Math.random().$M(...).$N(...)
+      - metavariable-regex:
+          metavariable: $NAME
+          regex: (?i).*(token|secret|password|passwd|nonce|otp|apikey|api_key|session).*
+
+  - id: donemark.weak-hash-for-passwords
+    message: Passwords are hashed with MD5 or SHA-1, which are quick to reverse by trying
+    severity: WARNING
+    languages: [typescript, javascript]
+    metadata:
+      security-severity: "6.0"
+      category: security
+      cwe: "CWE-328"
+    patterns:
+      - pattern-either:
+          - pattern: $C.createHash("md5")
+          - pattern: $C.createHash("sha1")
+          - pattern: createHash("md5")
+          - pattern: createHash("sha1")
+
+  - id: donemark.cookie-unprotected
+    message: A cookie is set without httpOnly or without secure, so script or plain HTTP can read it
+    severity: WARNING
+    languages: [typescript, javascript]
+    metadata:
+      security-severity: "5.0"
+      category: security
+      cwe: "CWE-1004"
+    pattern-either:
+      - pattern: |
+          { ..., httpOnly: false, ... }
+      - pattern: |
+          { ..., secure: false, ... }
