@@ -1,4 +1,4 @@
-<!-- constat:template id=agents-md version=81 sha256=e1587e25033f891ef875810b309f7ce377aa2e805f385be5bdefb4a04c64ec32 -->
+<!-- constat:template id=agents-md version=82 sha256=e1587e25033f891ef875810b309f7ce377aa2e805f385be5bdefb4a04c64ec32 -->
 # Working in this repository
 
 DoneMark checks the work done here. A person approves the "done when" lines of each change, an agent builds it,
